@@ -43,6 +43,7 @@ public class Bank {
         bankAccounts = new ArrayList<>();
         this.readBankAccounts();
 
+        // each account will have a unique lock, that is shared among the threads.
         for (int i = 0; i < ACCOUNTS_NO; i++) {
             locks.add(new ReentrantLock());
         }
@@ -53,12 +54,15 @@ public class Bank {
         for (int i = 0; i < numberOfTransactions; i++) {
             Random random = new Random();
 
+            // we will randomly choose 2 different accounts from the data set
             int senderIndex = random.nextInt(0, ACCOUNTS_NO);
             int receiverIndex = random.nextInt(0, ACCOUNTS_NO);
             while (senderIndex == receiverIndex) {
                 receiverIndex = random.nextInt(0, ACCOUNTS_NO);
             }
 
+            // if the index of the sender is greater than the index of the receiver,
+            // we'll lock the account with smaller index in order to avoid the possibility of having deadlocks.
             if (senderIndex > receiverIndex) {
                 locks.get(receiverIndex).lock();
                 locks.get(senderIndex).lock();
@@ -70,11 +74,14 @@ public class Bank {
             Account sender = bankAccounts.get(senderIndex);
             Account receiver = bankAccounts.get(receiverIndex);
             int senderBalance = sender.getBalance();
-      
+
+            // if the balance of the sender's account is 0, the transaction is put off and an adequate message
+            // will be printed
             if (senderBalance == 0) {
                 System.out.println("Transaction between " + sender.getId() + " and " + receiver.getId() + " failed due to insufficient funds.");
             } else {
 
+                // otherwise, we choose randomly an amount to be sent and perform the transaction
                 int randomAmount = random.nextInt(0, senderBalance + 1);
                 Log log = new Log(transactionIdentifier.getAndIncrement(), sender, receiver, randomAmount);
 
@@ -88,6 +95,7 @@ public class Bank {
                         " completed successfully.");
             }
 
+            // we release the locks to allow other threads to access the accounts.
             if (senderIndex > receiverIndex) {
                 locks.get(senderIndex).unlock();
                 locks.get(receiverIndex).unlock();
@@ -99,8 +107,11 @@ public class Bank {
         }
     }
 
+    //
     public void consistencyCheck() {
         for (Account account : bankAccounts) {
+            // for each account we go backwards through the history to check if by reverting all the
+            // transaction, we get to the initial state of the account.
             List<Log> logs = account.getLogs();
 
             int accountCurrentBalance = account.getBalance();
@@ -120,13 +131,14 @@ public class Bank {
         }
     }
 
+    // Perform an audit to make sure that the transactions are valid.
     public void audit() {
+        // Lock all the accounts to make sure that the consistency check won't be affected by the running threads
         locks.forEach(Lock::lock);
-//        bankLock.lock();
         System.out.println("Consistency check started.");
         consistencyCheck();
         System.out.println("Consistency check finished.");
-//        bankLock.unlock();
+        // Remove the locks in order to allow the accounts to continue performing transactions
         locks.forEach(Lock::unlock);
     }
 
