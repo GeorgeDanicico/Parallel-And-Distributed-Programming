@@ -9,6 +9,8 @@ public class Account {
     private List<Log> logs;
     private final int initialBalance;
 
+//    public synchronized void add
+
     public Account(int id, int balance) {
         this.id = id;
         this.balance = balance;

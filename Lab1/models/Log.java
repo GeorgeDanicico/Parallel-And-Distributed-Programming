@@ -44,4 +44,9 @@ public class Log {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Log: id:" + this.getId() + "; sender id:" + sender.getId() + "; receiver id:" + receiver.getId() + "; amount: " + amount + "\n";
+    }
 }

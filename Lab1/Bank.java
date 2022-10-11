@@ -5,12 +5,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class Bank {
     private static final String FILE_NAME = "accounts.csv";
@@ -20,6 +19,7 @@ public class Bank {
     private List<Account> bankAccounts;
     private static AtomicInteger transactionIdentifier = new AtomicInteger(1);
     private List<Lock> locks = new ArrayList<>();
+    private Lock bankLock = new ReentrantLock();
 
     private void readBankAccounts() {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
@@ -55,39 +55,79 @@ public class Bank {
 
             int senderIndex = random.nextInt(0, ACCOUNTS_NO);
             int receiverIndex = random.nextInt(0, ACCOUNTS_NO);
-            while (senderIndex != receiverIndex) {
+            while (senderIndex == receiverIndex) {
                 receiverIndex = random.nextInt(0, ACCOUNTS_NO);
             }
 
-            locks.get(senderIndex).lock();
-            locks.get(receiverIndex).lock();
+            if (senderIndex > receiverIndex) {
+                locks.get(receiverIndex).lock();
+                locks.get(senderIndex).lock();
+            } else {
+                locks.get(senderIndex).lock();
+                locks.get(receiverIndex).lock();
+            }
 
             Account sender = bankAccounts.get(senderIndex);
             Account receiver = bankAccounts.get(receiverIndex);
-
             int senderBalance = sender.getBalance();
+      
             if (senderBalance == 0) {
-                System.out.println("Transaction between " + sender.getId() + " and " + receiver.getId() + "");
+                System.out.println("Transaction between " + sender.getId() + " and " + receiver.getId() + " failed due to insufficient funds.");
             } else {
-                int randomAmount = random.nextInt(1, senderBalance + 1);
+
+                int randomAmount = random.nextInt(0, senderBalance + 1);
                 Log log = new Log(transactionIdentifier.getAndIncrement(), sender, receiver, randomAmount);
 
                 sender.addNewLog(log);
                 receiver.addNewLog(log);
+
                 sender.decreaseBalance(randomAmount);
                 receiver.increaseBalance(randomAmount);
 
-                System.out.println("Transaction #" + log.getId() + " completed successfully.");
+                System.out.println("Transaction #" + log.getId() + " between " + sender.getId() + " and " + receiver.getId() +
+                        " completed successfully.");
             }
 
-            locks.get(receiverIndex).unlock();
-            locks.get(senderIndex).unlock();
+            if (senderIndex > receiverIndex) {
+                locks.get(senderIndex).unlock();
+                locks.get(receiverIndex).unlock();
+            } else {
+                locks.get(receiverIndex).unlock();
+                locks.get(senderIndex).unlock();
 
+            }
         }
     }
 
     public void consistencyCheck() {
+        for (Account account : bankAccounts) {
+            List<Log> logs = account.getLogs();
 
+            int accountCurrentBalance = account.getBalance();
+
+            for (Log log : logs) {
+                if (log.getSender() == account) {
+                    accountCurrentBalance += log.getAmount();
+                } else {
+                    accountCurrentBalance -= log.getAmount();
+                }
+            }
+
+            if (accountCurrentBalance != account.getInitialBalance()) {
+
+                throw new RuntimeException("Inconsistency detected!");
+            }
+        }
+    }
+
+    public void audit() {
+        locks.forEach(Lock::lock);
+//        bankLock.lock();
+        System.out.println("Consistency check started.");
+        consistencyCheck();
+        System.out.println("Consistency check finished.");
+//        bankLock.unlock();
+        locks.forEach(Lock::unlock);
     }
 
     public List<Account> getBankAccounts() {
