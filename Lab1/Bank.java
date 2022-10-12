@@ -2,14 +2,12 @@ import models.Account;
 import models.Log;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 public class Bank {
     private static final String FILE_NAME = "accounts.csv";
@@ -17,9 +15,8 @@ public class Bank {
     private static final String DELIMITER = " ";
 
     private List<Account> bankAccounts;
-    private static AtomicInteger transactionIdentifier = new AtomicInteger(1);
+    private static AtomicInteger transactionId = new AtomicInteger(1);
     private List<Lock> locks = new ArrayList<>();
-    private Lock bankLock = new ReentrantLock();
 
     private void readBankAccounts() {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
@@ -83,7 +80,7 @@ public class Bank {
 
                 // otherwise, we choose randomly an amount to be sent and perform the transaction
                 int randomAmount = random.nextInt(0, senderBalance + 1);
-                Log log = new Log(transactionIdentifier.getAndIncrement(), sender, receiver, randomAmount);
+                Log log = new Log(transactionId.getAndIncrement(), sender, receiver, randomAmount);
 
                 sender.addNewLog(log);
                 receiver.addNewLog(log);
@@ -140,9 +137,5 @@ public class Bank {
         System.out.println("Consistency check finished.");
         // Remove the locks in order to allow the accounts to continue performing transactions
         locks.forEach(Lock::unlock);
-    }
-
-    public List<Account> getBankAccounts() {
-        return this.bankAccounts;
     }
 }

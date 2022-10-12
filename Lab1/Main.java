@@ -1,12 +1,13 @@
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    public static final int THREADS_NUMBER = 10;
-    public static final int TRANSACTIONS_NUMBER = 100;
-    public static final int CONSISTENCY_CHECK_DELAY = 20;
-    public static final int CONSISTENCY_CHECK_NUMBER = 2;
+    public static final int THREADS_NUMBER = 100;
+    public static final int TRANSACTIONS_NUMBER = 10000;
+    public static final int CONSISTENCY_CHECK_DELAY = 100;
+    public static final int CONSISTENCY_CHECK_NUMBER = 25;
 
     public static void main(String[] args) {
 
@@ -61,6 +62,6 @@ public class Main {
                 "Started at: " + startTime + "\n" +
                         "Ended at: " + endTime
         );
-        System.out.println("Execution finished.");
+        System.out.println("Execution finished in " + startTime.until(endTime, ChronoUnit.MILLIS) + " milliseconds.");
     }
 }
