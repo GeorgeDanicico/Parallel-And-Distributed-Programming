@@ -1,12 +1,14 @@
 package algorithms.karatsuba;
 
 import models.Polynomial;
-import utils.Utils;
+import utils.PolynomialOperations;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class ParallelKaratsuba {
-    private static final int NR_THREADS = 4;
+    private static final int THREADS_COUNT = 4;
     private static final int MAX_DEPTH = 4;
 
     public static Polynomial multiply(Polynomial p1, Polynomial p2, int currentDepth) throws InterruptedException, ExecutionException {
@@ -24,24 +26,43 @@ public class ParallelKaratsuba {
         Polynomial lowP2 = new Polynomial(p2.getCoefficients().subList(0, len));
         Polynomial highP2 = new Polynomial(p2.getCoefficients().subList(len, p2.getCoefficients().size()));
 
-        ExecutorService executor = Executors.newFixedThreadPool(NR_THREADS);
-        Future<Polynomial> f1 = executor.submit(() -> multiply(lowP1, lowP2, currentDepth + 1));
-        Future<Polynomial> f2 = executor.submit(() -> multiply(Utils.add(lowP1, highP1), Utils
-                .add(lowP2, highP2), currentDepth + 1));
-        Future<Polynomial> f3 = executor.submit(() -> multiply(highP1, highP2, currentDepth + 1));
+        ExecutorService executor = Executors.newFixedThreadPool(THREADS_COUNT);
+        List<CompletableFuture<Polynomial>> futures = new ArrayList<>();
+        futures.add(CompletableFuture.supplyAsync(() -> {
+            try {
+                return multiply(lowP1, lowP2, currentDepth + 1);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor));
+        futures.add(CompletableFuture.supplyAsync(() -> {
+            try {
+                return multiply(highP1, highP2, currentDepth + 1);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor));
+        futures.add(CompletableFuture.supplyAsync(() -> {
+            try {
+                return multiply(PolynomialOperations.add(lowP1, highP1), PolynomialOperations
+                        .add(lowP2, highP2), currentDepth + 1);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor));
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).join();
+
+        Polynomial result1 = futures.get(0).join();
+        Polynomial result2 = futures.get(1).join();
+        Polynomial result3 = futures.get(2).join();
 
         executor.shutdown();
-
-        Polynomial z1 = f1.get();
-        Polynomial z2 = f2.get();
-        Polynomial z3 = f3.get();
-
         executor.awaitTermination(60, TimeUnit.SECONDS);
 
         //calculate the final result
-        Polynomial r1 = Utils.addZeros(z3, 2 * len);
-        Polynomial r2 = Utils.addZeros(Utils.subtract(Utils.subtract(z2, z3), z1), len);
-        Polynomial result = Utils.add(Utils.add(r1, r2), z1);
-        return result;
+        Polynomial f1 = PolynomialOperations.addZerosCoefficients(result2, 2 * len);
+        Polynomial f2 = PolynomialOperations.addZerosCoefficients(PolynomialOperations.subtract(PolynomialOperations.subtract(result3, result2), result1), len);
+        return PolynomialOperations.add(PolynomialOperations.add(f1, f2), result1);
     }
 }

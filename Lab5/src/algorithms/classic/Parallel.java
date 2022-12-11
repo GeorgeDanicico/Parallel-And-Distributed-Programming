@@ -2,6 +2,7 @@ package algorithms.classic;
 
 import models.Polynomial;
 import models.Task;
+import utils.PolynomialOperations;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -11,28 +12,24 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Parallel {
-    private static final int NR_THREADS = 4;
+    private static final int THREADS_COUNT = 4;
 
     public static Polynomial multiply(Polynomial p1, Polynomial p2) throws InterruptedException {
         int sizeOfResultCoefficientList = p1.getDegree() + p2.getDegree() + 1;
-        List<Integer> coefficients = IntStream.range(0, sizeOfResultCoefficientList).mapToObj(i -> 0).collect(Collectors.toList());
-        Polynomial result = new Polynomial(coefficients);
 
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NR_THREADS);
-        int step = sizeOfResultCoefficientList / NR_THREADS;
-        if (step == 0) {
-            step = 1;
-        }
+        Polynomial result = PolynomialOperations.generatePolynomialWithZeroCoefficients(sizeOfResultCoefficientList);
 
-        int end;
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(THREADS_COUNT);
+        int step = sizeOfResultCoefficientList / THREADS_COUNT == 0 ? 1 : sizeOfResultCoefficientList / THREADS_COUNT;
+
         for (int i = 0; i < sizeOfResultCoefficientList; i += step) {
-            end = i + step;
+            int end = i + step;
             Task task = new Task(i, end, p1, p2, result);
             executor.execute(task);
         }
 
         executor.shutdown();
-        executor.awaitTermination(50, TimeUnit.SECONDS);
+        executor.awaitTermination(1, TimeUnit.SECONDS);
 
         return result;
     }

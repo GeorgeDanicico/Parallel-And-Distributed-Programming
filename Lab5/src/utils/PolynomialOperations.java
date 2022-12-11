@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Utils {
+public class PolynomialOperations {
     public static Polynomial add(Polynomial p1, Polynomial p2){
         int minDegree = Math.min(p1.getDegree(), p2.getDegree());
         int maxDegree = Math.max(p1.getDegree(), p2.getDegree());
@@ -63,9 +63,14 @@ public class Utils {
         return new Polynomial(coefficients);
     }
 
-    public static Polynomial addZeros(Polynomial p, int offset) {
+    public static Polynomial addZerosCoefficients(Polynomial p, int offset) {
         List<Integer> coefficients = IntStream.range(0, offset).mapToObj(i -> 0).collect(Collectors.toList());
         coefficients.addAll(p.getCoefficients());
+        return new Polynomial(coefficients);
+    }
+
+    public static Polynomial generatePolynomialWithZeroCoefficients(int offset) {
+        List<Integer> coefficients = IntStream.range(0, offset).mapToObj(i -> 0).collect(Collectors.toList());
         return new Polynomial(coefficients);
     }
 }
