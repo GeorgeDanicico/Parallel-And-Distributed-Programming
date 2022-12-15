@@ -6,7 +6,7 @@ import java.util.List;
 public class Main {
     public static final int THREADS_NUMBER = 100;
     public static final int TRANSACTIONS_NUMBER = 10000;
-    public static final int CONSISTENCY_CHECK_DELAY = 100;
+    public static final int CONSISTENCY_CHECK_DELAY = 100; // milliseconds
     public static final int CONSISTENCY_CHECK_NUMBER = 25;
 
     public static void main(String[] args) {

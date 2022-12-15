@@ -20,10 +20,6 @@ public class KthConsecutiveTask extends Task {
         int row = taskNumber / resultMatrix.getColumns();
         int column = taskNumber % resultMatrix.getColumns();
 
-        if (taskNumber == 3) {
-            System.out.println("enter");
-        }
-
         for (int i = 0; i < noOfElements; i++) {
 
             int resultValue = firstMatrix.computeElementOfProduct(secondMatrix, row, column);

@@ -11,11 +11,14 @@ import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
-    private static final int MATRIX_ROWS = 9;
-    private static final int MATRIX_COLUMNS = 9;
+    private static final int MATRIX_ROWS = 1000;
+    private static final int MATRIX_COLUMNS = 1000;
     private static final int THREAD_COUNT = 4;
+    private static final String PATTERN_FORMAT = "dd.MM.yyyy";
+
 
     public static void main(String[] args) {
         Matrix matrix1 = new Matrix(Matrix.generateRandomMatrix(MATRIX_ROWS, MATRIX_COLUMNS), MATRIX_ROWS, MATRIX_COLUMNS);
@@ -42,7 +45,7 @@ public class Main {
         threadList.forEach(Thread::start);
         Instant endTime = Instant.now();
         System.out.println("Consecutive Row Elements, threads approach, started at " + startTime +
-                " and ended at: " + endTime + " : \n" + resultMatrix);
+                " and ended at: " + endTime);
 
         threadList.forEach(thread -> {
             try {
@@ -57,9 +60,14 @@ public class Main {
         tasks.forEach(executorService::submit);
         endTime = Instant.now();
         System.out.println("Consecutive Row Elements, thread pool approach, started at " + startTime +
-                " and ended at: " + endTime + " : \n" + resultMatrix + "\n");
+                " and ended at: " + endTime + " : \n" + "\n");
 
         executorService.shutdown();
+        try {
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Method 1.b) Consecutive Row Elements with thread pool.
     }
 
@@ -76,7 +84,7 @@ public class Main {
         threadList.forEach(Thread::start);
         Instant endTime = Instant.now();
         System.out.println("Consecutive Columns Elements, threads approach, started at " + startTime +
-                " and ended at: " + endTime + " : \n" + resultMatrix);
+                " and ended at: " + endTime + " : \n" );
 
         threadList.forEach(thread -> {
             try {
@@ -91,9 +99,14 @@ public class Main {
         tasks.forEach(executorService::submit);
         endTime = Instant.now();
         System.out.println("Consecutive Columns Elements, thread pool approach, started at " + startTime +
-                " and ended at: " + endTime + " : \n" + resultMatrix + "\n");
+                " and ended at: " + endTime);
 
         executorService.shutdown();
+        try {
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Method 1.b) Consecutive Row Elements with thread pool.
     }
 
@@ -110,7 +123,7 @@ public class Main {
         threadList.forEach(Thread::start);
         Instant endTime = Instant.now();
         System.out.println("Consecutive Kth Elements, threads approach, started at " + startTime +
-                " and ended at: " + endTime + " : \n" + resultMatrix);
+                " and ended at: " + endTime + " : \n");
 
         threadList.forEach(thread -> {
             try {
@@ -125,9 +138,14 @@ public class Main {
         tasks.forEach(executorService::submit);
         endTime = Instant.now();
         System.out.println("Consecutive Kth Elements, thread pool approach, started at " + startTime +
-                " and ended at: " + endTime + " : \n" + resultMatrix + "\n");
+                " and ended at: " + endTime );
 
         executorService.shutdown();
+        try {
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Method 1.b) Consecutive Row Elements with thread pool.
     }
 

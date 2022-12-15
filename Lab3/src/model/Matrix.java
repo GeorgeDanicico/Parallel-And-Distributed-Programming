@@ -49,7 +49,7 @@ public class Matrix {
 
         for (int i = 0; i < row; i ++) {
             for (int j = 0; j < column; j++) {
-                matrix[i][j] = random.nextInt(10) + 1;
+                matrix[i][j] = 1;
             }
         }
 
