@@ -21,7 +21,7 @@ public class HamiltonianFinder {
     public String findPath() throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(THREADS_COUNT);
         List<Integer> path = new ArrayList<>();
-        new SearchCycle(graph, 0, path).search(0);
+//        new SearchCycle(graph, 0, path).search(0);
 
         for(int i = 0; i < graph.getNodes().size(); i++) {
             executorService.submit(new SearchCycle(graph, i, path));

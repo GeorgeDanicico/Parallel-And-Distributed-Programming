@@ -1,0 +1,9 @@
+
+R
+java:S1854'"5Remove this useless assignment to local variable "r".(¡Å”¦8íÐ«ÓÑ0
+4
+java:S2119'"Save and re-use this "Random".(¡Å”¦
+C
+java:S1481'"&Remove this unused "r" local variable.(¡Å”¦8ñÐ«ÓÑ0
+T
+java:S1128"7Remove this unused import 'utils.PolynomialOperations'.(Ó´×ã8¤Ì®ˆÐ0

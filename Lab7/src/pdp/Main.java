@@ -3,8 +3,8 @@ package pdp;
 import mpi.MPI;
 
 public class Main {
-    static final int POLYNOMIAL_SIZE = 5;
-    static final String ALGORITHM = "karatsuba";
+    static final int POLYNOMIAL_SIZE = 101;
+    static final String IMPLEMENTATION = "karatsuba";
 
     public static void master(Polynomial p1, Polynomial p2, int processes){
         long startTime = System.nanoTime();
@@ -34,7 +34,7 @@ public class Main {
 
         long endTime = System.nanoTime();
         double time = (endTime - startTime) / 1000000000.0;
-        System.out.println(ALGORITHM + ":\n");
+        System.out.println(IMPLEMENTATION + ":\n");
         System.out.println("Execution time: " + time);
         System.out.println(result + "\n");
     }
@@ -79,7 +79,7 @@ public class Main {
             pol1.getCoefficients().set(j, 0);
         }
 
-        Polynomial result = PolynomialUtils.karatsubaSequential(pol1, pol2);
+        Polynomial result = PolynomialUtils.KaratsubaSequential(pol1, pol2);
 
         MPI.COMM_WORLD.Send(new Object[]{result}, 0, 1, MPI.OBJECT, 0, 0);
     }
@@ -102,10 +102,10 @@ public class Main {
 
             master(p1, p2, size);
         } else {
-            if (ALGORITHM.equals("regular")){
+            if (IMPLEMENTATION.equalsIgnoreCase("regular")){
                 regularWorker(me);
             }
-            if (ALGORITHM.equals("karatsuba")){
+            if (IMPLEMENTATION.equalsIgnoreCase("karatsuba")){
                 karatsubaWorker(me);
             }
         }

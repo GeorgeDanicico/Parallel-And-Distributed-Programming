@@ -1,0 +1,15 @@
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/bin/Debug/net6.0/Lab4
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/bin/Debug/net6.0/Lab4.deps.json
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/bin/Debug/net6.0/Lab4.runtimeconfig.json
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/bin/Debug/net6.0/Lab4.dll
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/bin/Debug/net6.0/Lab4.pdb
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.csproj.AssemblyReference.cache
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.GeneratedMSBuildEditorConfig.editorconfig
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.AssemblyInfoInputs.cache
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.AssemblyInfo.cs
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.csproj.CoreCompileInputs.cache
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.dll
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/refint/Lab4.dll
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.pdb
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/Lab4.genruntimeconfig.cache
+/Users/george/Desktop/Faculty/Parallel-And-Distributed-Programming/Lab4/Lab4/obj/Debug/net6.0/ref/Lab4.dll

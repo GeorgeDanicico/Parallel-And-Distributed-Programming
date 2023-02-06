@@ -1,0 +1,69 @@
+2. Bank accounts
+
+At a bank, we have to keep track of the balance of some accounts. Also, each account has an associated log (the list of records of operations performed on that account). Each operation record shall have a unique serial number, that is incremented for each operation performed in the bank.
+We have concurrently run transfer operations, to be executer on multiple threads. Each operation transfers a given amount of money from one account to someother account, and also appends the information about the transfer to the logs of both accounts.
+From time to time, as well as at the end of the program, a consistency check shall be executed. It shall verify that the amount of money in each account corresponds with the operations records associated to that account, and also that all operations on each account appear also in the logs of the source or destination of the transfer.
+Two transaction involving distinct accounts must be able to proceed independently (without having to wait for the same mutex).
+
+Solution:
+
+The implementation was done in Java. It contains the following modules: Account, Log, Bank and Main.
+Besides, there is a csv file from which the accounts are imported. It has been generating such that it has 500 accounts
+with balances between 100 and 10000.
+
+The Account entity constitutes an account which has the following attributes:
+    - id - integer
+    - balance - integer
+    - logs - list of logs, which represents the history of the transactions in which the account has been involved.
+
+    It has basic methods such as constructor, getters and setters. Moreover, it has some special functions such as:
+    - increaseBalance - which increases the current balance with a certain amount
+    - decreaseBalance - which decreases the current balance with a certain amount
+    - addNewLog - which adds a new log to the history
+
+The Log entity constitutes a transaction that had taken place between 2 accounts.
+It has the following attributes:
+    - id - integer
+    - sender - Account, which represents the account that sent the money
+    - receiver - Account, which represents the account that received the money
+    - amount - integer
+    It has only basic methods such as constructor, getters and setters.
+
+The Bank entity constitutes the bank. This class takes care of all the computations.
+It has the following attributes:
+    - FILE_NAME, ACCOUNTS_NO and DELIMITER which are constants, representing the file name of the csv,
+    the number of the accounts and the delimiter.
+    - bankAccounts - list of accounts
+    - transactionId - atomic integer which will be used to initialize the id of each transaction, and increased after.
+    - locks - list of locks, which will be used to take care of the invariants of the accounts. Each account will have
+    one lock.
+
+    It has the following methods, besides the constructor:
+    - readBankAccounts, which reads all the accounts from the csv file.
+    - runTransactions, which takes as input a number of transactions, and it generates them
+    First we generate 2 different random indexes that are in the interval [0, ACCOUNTS_NO).
+    After that, we lock the account with the lower index and then the account with the higher index
+    in order to avoid deadlocks. Then we generate the random amount of the transaction and after that,
+    if it is greater than 0, then we save the transactions and modify the balances of the accounts.
+    In the end, we release the locks of the accounts, in order to allow other threads to access them.
+    - consistencyCheck, which checks for each account, if by reverting the transactions, we get to the initial state of
+    account. If not, it raises a runtime error.
+    - audit, which first locks all accounts, to make sure that during the consistency check, no thread can interfere and
+    cause an undefined behaviour. After it locked all the accounts, it performs the consistency check, and after that
+    it releases them, to allow the threads to continue.
+
+The Main entity creates and starts all the threads. There are 4 constants defined: THREADS_NUMBER - number of threads,
+TRANSACTIONS_NUMBER - number of transactions, CONSISTENCY_CHECK_DELAY - the delay in milliseconds between audits
+and CONSISTENCY_CHECK_NUMBER - the number of checks that will be performed.
+We generate the threads and start them. We also start the audit thread to ensure the correctness of the data. It also
+verifies at the end by doing one last check.
+
+Tests:
+with 500 accounts I obtain the following results:
+
+- 50 threads, 100 possible transactions per thread, 2 checks, 20 millis delay: 4965 transactions, 1066 milliseconds
+- 50 threads, 100 possible transactions per thread, 4 checks, 20 millis delay: 4969 transactions, 1258 milliseconds
+- 100 threads, 1000 possible transactions per threads, 15 checks, 40 millis delay: 99062 transactions, 2770 milliseconds
+- 100 threads, 10000 possible transactions per threads, 25 checks, 100 millis delay: 989908 transactions, 6471 milliseconds
+
+

@@ -1,0 +1,10 @@
+
+Z	java:S106"9Replace this use of System.out or System.err by a logger.(¼Şµºùÿÿÿÿ8ÎıüÂØ0
+U	java:S106"9Replace this use of System.out or System.err by a logger.(ˆõÉÍ8ÏıüÂØ0
+|
+java:S6201"ZReplace this instanceof check and cast with 'instanceof SubscribeMessage subscribeMessage'(³½é¼ıÿÿÿÿ8Œ¥íÔÚ0
+U	java:S106"9Replace this use of System.out or System.err by a logger.(Êí›ó8ÏıüÂØ0
+q
+java:S6201 "TReplace this instanceof check and cast with 'instanceof UpdateMessage updateMessage'(Óˆ÷‡8¥íÔÚ0
+U	java:S106""9Replace this use of System.out or System.err by a logger.(²ªè–8ĞıüÂØ0
+U	java:S106("9Replace this use of System.out or System.err by a logger.(²ÇŒı8ĞıüÂØ0

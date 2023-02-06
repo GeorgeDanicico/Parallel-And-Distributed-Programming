@@ -1,10 +1,5 @@
 package pdp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 public class PolynomialUtils {
     public static Polynomial getResult(Object[] polynomials){
         int size = ((Polynomial) polynomials[0]).getDegree();
@@ -14,103 +9,6 @@ public class PolynomialUtils {
         }
 
         return result;
-    }
-
-    public static Polynomial add(Polynomial p1, Polynomial p2){
-        int minDegree = Math.min(p1.getDegree(), p2.getDegree());
-        int maxDegree = Math.max(p1.getDegree(), p2.getDegree());
-        List<Integer> coefficients = new ArrayList<>(maxDegree + 1);
-
-        //Add the 2 polynomials
-        for (int i = 0; i <= minDegree; i++) {
-            coefficients.add(p1.getCoefficients().get(i) + p2.getCoefficients().get(i));
-        }
-
-        if (minDegree != maxDegree) {
-            if (maxDegree == p1.getDegree()) {
-                for (int i = minDegree + 1; i <= maxDegree; i++) {
-                    coefficients.add(p1.getCoefficients().get(i));
-                }
-            } else {
-                for (int i = minDegree + 1; i <= maxDegree; i++) {
-                    coefficients.add(p2.getCoefficients().get(i));
-                }
-            }
-        }
-
-        return new Polynomial(coefficients);
-    }
-
-    public static Polynomial subtract(Polynomial p1, Polynomial p2){
-        int minDegree = Math.min(p1.getDegree(), p2.getDegree());
-        int maxDegree = Math.max(p1.getDegree(), p2.getDegree());
-        List<Integer> coefficients = new ArrayList<>(maxDegree + 1);
-
-        for (int i = 0; i <= minDegree; i++) {
-            coefficients.add(p1.getCoefficients().get(i) - p2.getCoefficients().get(i));
-        }
-
-        if (minDegree != maxDegree) {
-            if (maxDegree == p1.getDegree()) {
-                for (int i = minDegree + 1; i <= maxDegree; i++) {
-                    coefficients.add(p1.getCoefficients().get(i));
-                }
-            } else {
-                for (int i = minDegree + 1; i <= maxDegree; i++) {
-                    coefficients.add(p2.getCoefficients().get(i));
-                }
-            }
-        }
-
-        int i = coefficients.size() - 1;
-        while (coefficients.get(i) == 0 && i > 0) {
-            coefficients.remove(i);
-            i--;
-        }
-
-        return new Polynomial(coefficients);
-    }
-
-    public static Polynomial addZerosCoefficients(Polynomial p, int offset) {
-        List<Integer> coefficients = IntStream.range(0, offset).mapToObj(i -> 0).collect(Collectors.toList());
-        coefficients.addAll(p.getCoefficients());
-        return new Polynomial(coefficients);
-    }
-
-    public static Polynomial regularSequential(Polynomial p1, Polynomial p2){
-        Polynomial result = new Polynomial(p1.getDegree() + p2.getDegree() + 1);
-
-        for (int i = 0; i < p1.getCoefficients().size(); i++) {
-            for (int j = 0; j < p2.getCoefficients().size(); j++) {
-                int newIndex = i + j;
-                int newVal = p1.getCoefficients().get(i) * p2.getCoefficients().get(j) + result.getCoefficients().get(newIndex);
-                result.getCoefficients().set(newIndex, newVal);
-            }
-        }
-
-        return  result;
-    }
-
-    public static Polynomial karatsubaSequential(Polynomial p1, Polynomial p2) {
-        if (p1.getDegree() <= 2 && p2.getDegree() <= 2) {
-            return regularSequential(p1, p2);
-        }
-
-        int len = Math.max(p1.getDegree(), p2.getDegree()) / 2;
-        Polynomial leftP1 = new Polynomial(p1.getCoefficients().subList(0, len));
-        Polynomial rightP1 = new Polynomial(p1.getCoefficients().subList(len, p1.getCoefficients().size()));
-        Polynomial leftP2 = new Polynomial(p2.getCoefficients().subList(0, len));
-        Polynomial rightP2 = new Polynomial(p2.getCoefficients().subList(len, p2.getCoefficients().size()));
-
-        Polynomial result1 = karatsubaSequential(leftP1, leftP2);
-        Polynomial result2 = karatsubaSequential(rightP1, rightP2);
-        Polynomial result3 = karatsubaSequential(add(leftP1, rightP1), add(leftP2, rightP2));
-
-        Polynomial f1 = addZerosCoefficients(
-                subtract(subtract(result3, result2), result1), len);
-        Polynomial f2 = addZerosCoefficients(result2, 2 * len);
-
-        return add(add(f1, f2), result1);
     }
 
     public static Polynomial multiplySequence(Polynomial p1, Polynomial p2, int start, int end) {
@@ -123,5 +21,40 @@ public class PolynomialUtils {
         }
 
         return result;
+    }
+
+    public static Polynomial regularSequential(Polynomial p1, Polynomial p2){
+        Polynomial result = new Polynomial(p1.getDegree() + p2.getDegree() + 1);
+
+        for (int i = 0; i < p1.getCoefficients().size(); i++) {
+            for (int j = 0; j < p2.getCoefficients().size(); j++) {
+                int index = i + j;
+                int rez = p1.getCoefficients().get(i) * p2.getCoefficients().get(j) + result.getCoefficients().get(index);
+                result.getCoefficients().set(index, rez);
+            }
+        }
+
+        return  result;
+    }
+
+    public static Polynomial KaratsubaSequential(Polynomial p1, Polynomial p2){
+        if (p1.getDegree() < 2 || p2.getDegree() < 2)
+            return regularSequential(p1, p2);
+
+        int m = Math.min(p1.getDegree(), p2.getDegree()) / 2;
+
+        Polynomial low1 = new Polynomial(p1.getCoefficients().subList(0, m));
+        Polynomial high1 = new Polynomial(p1.getCoefficients().subList(m, p1.getSize()));
+        Polynomial low2 = new Polynomial(p2.getCoefficients().subList(0, m));
+        Polynomial high2 = new Polynomial(p2.getCoefficients().subList(m, p2.getSize()));
+
+        Polynomial z0 = KaratsubaSequential(low1, low2);
+        Polynomial z1 = KaratsubaSequential(Polynomial.add(low1, high1), Polynomial.add(low2, high2));
+        Polynomial z2 = KaratsubaSequential(high1, high2);
+
+        Polynomial rez1 = Polynomial.addZeros(z2, 2 * m);
+        Polynomial rez2 = Polynomial.addZeros(Polynomial.subtract(Polynomial.subtract(z1, z2), z0), m);
+
+        return Polynomial.add(Polynomial.add(rez1, rez2), z0);
     }
 }

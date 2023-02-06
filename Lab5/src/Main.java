@@ -15,7 +15,7 @@ import static models.Execution.SEQUENTIAL;
 
 public class Main {
     private static final Execution METHOD = PARALLEL;
-    private static final Algorithm ALGORITHM = CLASSIC;
+    private static final Algorithm ALGORITHM = KARATSUBA;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         Polynomial p1 = new Polynomial(100);

@@ -1,0 +1,9 @@
+
+0
+java:S1220""Move this file to a named package.
+S	java:S106"9Replace this use of System.out or System.err by a logger.(øÍŞ€ûÿÿÿÿ
+N	java:S106"9Replace this use of System.out or System.err by a logger.(ª§¶–
+Z	java:S106"9Replace this use of System.out or System.err by a logger.(Ö€ÉĞÿÿÿÿÿ8š•áİÏ0
+U	java:S1060"9Replace this use of System.out or System.err by a logger.(¾ºˆ8À¥°‹Ğ0
+Q
+java:S1128"5Remove this unused import 'models.Algorithm.CLASSIC'.(Ä¾08ûÄ©ÓÑ0
